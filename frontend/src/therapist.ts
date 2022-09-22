@@ -20,19 +20,19 @@ export interface Therapist {
   description: string
   therapyType: string
   title: string
-  website: string?
+  website?: string
 
-  badges: Array<Badge>
+  badges: Badge[]
 }
 
 export interface Badge {
   name: string
-  //value: string
+  // value: string
   imageUrl?: string
   color?: string
 
 }
 
 export interface TherapistDisplayModel extends Therapist {
-  searchScore: number?;
+  searchScore?: number
 }

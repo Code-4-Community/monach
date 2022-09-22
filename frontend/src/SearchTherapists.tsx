@@ -1,5 +1,5 @@
 import { Button, Card, ControlGroup, Elevation, Label, NumericInput, Spinner } from '@blueprintjs/core'
-import React, { ChangeEvent, useCallback, useMemo, useState } from 'react'
+import React, { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useQuery } from 'react-query'
 import { apiClient, SearchTherapistsQuery } from './apiClient'
 import { useGeolocated } from 'react-geolocated'
@@ -8,18 +8,26 @@ import { Badge, Box, Center, Divider, Flex, Grid, GridItem, Heading, HStack, Ima
 import { CheckCircleIcon, QuestionIcon, Search2Icon, StarIcon } from '@chakra-ui/icons'
 import InfiniteScroll from 'react-infinite-scroll-component'
 
+const debouncedSearchTherapists = debouncePromise(apiClient.searchTherapists, 100)
+
 export const SearchTherapists: React.FC = () => {
   const { coords } = useGeolocated()
   const [searchQuery, setSearchQuery] = useState<SearchTherapistsQuery>({ searchString: '', maxDistance: 1000 })
-  console.log(searchQuery)
-  const { data, isLoading } = useQuery(['therapists', searchQuery], async () => {
-    return await debouncePromise(apiClient.searchTherapists, 300)(searchQuery)
-  })
+
+  const [searchResult, setSearchResult] = useState<TherapistDisplayModel[] | null >(null)
+  useEffect(() => {
+    setSearchResult(null)
+    debouncedSearchTherapists(searchQuery).then(setSearchResult)
+  }, [searchQuery])
+
+  const data = searchResult
+  const isLoading = searchResult == null
 
   const onInputChange = useCallback((evt: ChangeEvent<HTMLInputElement>) => {
     setNumTherapistsToRender(10)
     setSearchQuery({ ...searchQuery, searchString: evt.target.value })
   }, [searchQuery, setSearchQuery])
+
   const onMaxDistanceChange = useCallback((value: number) => {
     setSearchQuery({ ...searchQuery, maxDistance: value })
   }, [searchQuery, setSearchQuery])
@@ -30,7 +38,7 @@ export const SearchTherapists: React.FC = () => {
 
   const therapists = data?.filter(therapist => ((therapist.geocode == null) ||
                                                 (coords == null)) ||
-                                             searchQuery.maxDistance >= (dist(therapist.geocode?.lat, therapist.geocode?.long, coords?.latitude, coords?.longitude)))
+                                             (searchQuery.maxDistance ?? Number.MAX_VALUE) >= (dist(therapist.geocode?.lat, therapist.geocode?.long, coords?.latitude, coords?.longitude)))
   if (searchQuery.searchString.length === 0) {
     therapists?.sort((a, b) => comparableDistance(a) - comparableDistance(b))
   }
@@ -39,15 +47,13 @@ export const SearchTherapists: React.FC = () => {
 
   const therapistsToRender = useMemo(() => therapists?.slice(0, numTherapistsToRender), [numTherapistsToRender, therapists])
 
-
-  console.log('therapistsToRender', therapistsToRender)
   return (
     <div>
       <div style={{ marginTop: 64 }}>
 
         <InputGroup size='lg'>
-          <InputLeftAddon children={<Search2Icon  w={6} h={6}/>} />
-          <Input type='search' placeholder='Search practitioners by text (e.g. "Taekwondo", "Tracy", "Spanish")' onChange={onInputChange} value={searchQuery.searchString} autoFocus={true} />
+          <InputLeftAddon children={<Search2Icon w={6} h={6} />} />
+          <Input type='search' placeholder='Search practitioners by text (e.g. "Taekwondo", "Tracy", "Spanish")' onChange={onInputChange} value={searchQuery.searchString} autoFocus />
 
         </InputGroup>
 
@@ -60,15 +66,15 @@ export const SearchTherapists: React.FC = () => {
         (therapists != null) && (therapistsToRender != null) &&
 
         (<InfiniteScroll
-           dataLength={therapistsToRender.length} // This is important field to render the next data
-           next={() => setNumTherapistsToRender(numTherapistsToRender + 10)}
-           hasMore={therapistsToRender?.length < therapists.length}
-           loader={
-             <Stack>
-               <Skeleton height='40px' />
-               <Skeleton height='40px' />
-               <Skeleton height='40px' />
-             </Stack>
+          dataLength={therapistsToRender.length} // This is important field to render the next data
+          next={() => setNumTherapistsToRender(numTherapistsToRender + 10)}
+          hasMore={therapistsToRender?.length < therapists.length}
+          loader={
+            <Stack>
+              <Skeleton height='40px' />
+              <Skeleton height='40px' />
+              <Skeleton height='40px' />
+            </Stack>
            }
          >
           <VStack spacing={5}>
@@ -193,8 +199,8 @@ export const SearchTherapists: React.FC = () => {
                     </Box>
                     {therapist.searchScore != null && <Box gap={1} alignItems='end' display='flex' dir='row'>
                       {1.0 - therapist.searchScore >= 0.9
-                      ? <CheckCircleIcon w={5} h={5} color='green.400' />
-                      : <QuestionIcon w={5} h={5} color='orange.300' />}
+                        ? <CheckCircleIcon w={5} h={5} color='green.400' />
+                        : <QuestionIcon w={5} h={5} color='orange.300' />}
 
                       <Text size='sm'>
                         {(100 * (1.0 - therapist.searchScore)).toFixed(2)}% match
@@ -203,7 +209,6 @@ export const SearchTherapists: React.FC = () => {
 
                   </Box>
 
-
                 </>))
             }
           </VStack>
@@ -211,16 +216,15 @@ export const SearchTherapists: React.FC = () => {
 
       }
 
-
       {
         isLoading &&
-        <>
-          <Stack spacing={5}>
-            <Skeleton height='240px' />
-            <Skeleton height='240px' />
-            <Skeleton height='240px' />
-          </Stack>
-        </>
+          <>
+            <Stack spacing={5} marginTop='48px'>
+              <Skeleton height='240px' />
+              <Skeleton height='240px' />
+              <Skeleton height='240px' />
+            </Stack>
+          </>
 
       }
     </div>

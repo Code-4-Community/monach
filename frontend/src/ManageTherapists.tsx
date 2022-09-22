@@ -15,11 +15,8 @@ const ManageTherapists: React.FC = () => {
   }
 
   console.log(data)
-  const firstNameRenderer = (rowIndex: number) => (
-    <EditableCell2 value={data[rowIndex].firstName} />
-  )
-  const lastNameRenderer = (rowIndex: number) => (
-    <EditableCell2 value={data[rowIndex].lastName} />
+  const fullNameRenderer = (rowIndex: number) => (
+    <EditableCell2 value={data[rowIndex].fullName} />
   )
   const therapyTypeRenderer = (rowIndex: number) => (
     <EditableCell2 value={data[rowIndex].therapyType} />
@@ -41,8 +38,7 @@ const ManageTherapists: React.FC = () => {
     <div style={{ marginBlock: 24 }}>
       <HotkeysProvider>
         <Table2 numRows={data.length}>
-          <Column name='First Name' cellRenderer={firstNameRenderer} />
-          <Column name='Last Name' cellRenderer={lastNameRenderer} />
+          <Column name='Full Name' cellRenderer={fullNameRenderer} />
           <Column name='Therapy Type' cellRenderer={therapyTypeRenderer} />
           <Column name='Title' cellRenderer={titleRenderer} />
           <Column name='Address' cellRenderer={addressRenderer} />
