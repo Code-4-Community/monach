@@ -182,7 +182,7 @@ async function fetchAllPractitioners(useFake=false): Promise<Therapist[]> {
   if (useFake) {
     return FAKE_THERAPISTS
   } else {
-    return await axios.get('https://monarch.backend.c4cneu.com')
+    return await axios.get('https://monarch-backend.c4cneu.com')
   }
 }
 
