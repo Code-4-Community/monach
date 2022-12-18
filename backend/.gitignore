@@ -1,8 +1,15 @@
-*.js
-!jest.config.js
-*.d.ts
-node_modules
+.DS_Store
+.idea
+*.log
+tmp/
 
-# CDK asset staging directory
-.cdk.staging
-cdk.out
+*.tern-port
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.tsbuildinfo
+.npm
+.eslintcache
+
+.env
