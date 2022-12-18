@@ -182,7 +182,28 @@ async function fetchAllPractitioners(useFake=false): Promise<Therapist[]> {
   if (useFake) {
     return FAKE_THERAPISTS
   } else {
-    return await axios.get('https://monarch-backend.c4cneu.com')
+    const response = await axios.get('https://monarch-backend.c4cneu.com/practitioners')
+    const data =  response.data
+    // Transform on the frontend, but really ought to be done on the backend :/
+
+    const therapists: Therapist[] = data.map(d => ({
+      fullName: d.fullName,
+      address: d.businessLocation,
+      city: "",
+      state: "",
+      zip: "",
+      email: d.email,
+      phone: d.phoneNumber,
+      profilePictureUrl: "",
+      minimumAgeServed: d.minAgeServed,
+      description: "",
+      therapyType: d.modality,
+      title: d.businessName,
+      website: d.website,
+      badges: [],
+
+    }))
+    return therapists
   }
 }
 
@@ -190,16 +211,20 @@ async function fetchAllPractitioners(useFake=false): Promise<Therapist[]> {
 export function createApiClient (baseUrl: string): ApiClient {
 
   // Mutable in-memory store of therapists
+  // [] represents that the store has not been initialized yet
   let allPractitioners: Therapist[] = []
 
-  fetchAllPractitioners().then(practitioners => allPractitioners = practitioners)
+
 
   return {
     searchTherapists: async (query: SearchTherapistsQuery) => {
-      // TODO: debounce so you dont always query on change (expensive)
-      // await new Promise((resolve) => setTimeout(resolve, 0 + Math.random() * 500))
-      if (query.searchString.length === 0) return allPractitioners
 
+      if (allPractitioners.length === 0) {
+        allPractitioners = await fetchAllPractitioners()
+      }
+
+      if (query.searchString.length === 0) return allPractitioners
+      console.log(allPractitioners)
       const searchIndex = new Fuse(allPractitioners, {
         keys: ['fullName', {
           name: 'description',

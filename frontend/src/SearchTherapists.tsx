@@ -1,6 +1,5 @@
 import { Button, Card, ControlGroup, Elevation, Label, NumericInput, Spinner } from '@blueprintjs/core'
 import React, { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
-import { useQuery } from 'react-query'
 import { apiClient, SearchTherapistsQuery } from './apiClient'
 import { useGeolocated } from 'react-geolocated'
 import { Therapist, TherapistDisplayModel } from './therapist'
@@ -36,6 +35,7 @@ export const SearchTherapists: React.FC = () => {
     return ((therapist.geocode != null) && (coords != null)) ? dist(therapist.geocode?.lat, therapist.geocode?.long, coords?.latitude, coords?.longitude) : Number.POSITIVE_INFINITY
   }
 
+  console.log('data', data)
   const therapists = data?.filter(therapist => ((therapist.geocode == null) ||
                                                 (coords == null)) ||
                                              (searchQuery.maxDistance ?? Number.MAX_VALUE) >= (dist(therapist.geocode?.lat, therapist.geocode?.long, coords?.latitude, coords?.longitude)))
