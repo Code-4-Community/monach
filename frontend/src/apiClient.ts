@@ -186,6 +186,8 @@ async function fetchAllPractitioners(useFake=false): Promise<Therapist[]> {
     const data =  response.data
     // Transform on the frontend, but really ought to be done on the backend :/
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const therapists: Therapist[] = data.map(d => ({
       fullName: d.fullName,
       address: d.businessLocation,
@@ -213,7 +215,6 @@ export function createApiClient (baseUrl: string): ApiClient {
   // Mutable in-memory store of therapists
   // [] represents that the store has not been initialized yet
   let allPractitioners: Therapist[] = []
-
 
 
   return {
