@@ -5,6 +5,7 @@ import corpImage from './assets/Badge_Corp.png'
 import longTimePartnerImage from './assets/Badge_Heart.png'
 import frequentPartner from './assets/Badge_Partner.png'
 import raw from './raw.json'
+import axios from 'axios'
 
 faker.seed(123)
 
@@ -176,15 +177,30 @@ function createRandomTherapist (): Therapist {
   }
 }
 
+
+async function fetchAllPractitioners(useFake=false): Promise<Therapist[]> {
+  if (useFake) {
+    return FAKE_THERAPISTS
+  } else {
+    return await axios.get('https://monarch-env-5.eba-fhgdwyux.us-east-2.elasticbeanstalk.com/')
+  }
+}
+
+
 export function createApiClient (baseUrl: string): ApiClient {
+
+  // Mutable in-memory store of therapists
+  let allPractitioners: Therapist[] = []
+
+  fetchAllPractitioners().then(practitioners => allPractitioners = practitioners)
+
   return {
     searchTherapists: async (query: SearchTherapistsQuery) => {
       // TODO: debounce so you dont always query on change (expensive)
       // await new Promise((resolve) => setTimeout(resolve, 0 + Math.random() * 500))
-      console.log('raw', raw)
-      if (query.searchString.length === 0) return FAKE_THERAPISTS
+      if (query.searchString.length === 0) return allPractitioners
 
-      const searchIndex = new Fuse(FAKE_THERAPISTS, {
+      const searchIndex = new Fuse(allPractitioners, {
         keys: ['fullName', {
           name: 'description',
           weight: 1
