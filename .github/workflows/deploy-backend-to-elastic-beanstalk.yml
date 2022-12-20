@@ -27,7 +27,7 @@ jobs:
     - run: npm test
     
     - name: Generate deployment package (zip entire backend directory, prod environment vars configured in AWS ELB)
-      run: zip build.zip -r .
+      run: zip build.zip -r . --exclude node-modules
 
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v14
@@ -38,4 +38,4 @@ jobs:
         environment_name: ${{ secrets.DEPLOY_ENVIRONMENT_NAME }}
         version_label: "monarch-api-${{ github.sha }}"
         region: ${{ secrets.DEPLOY_AWS_REGION }}
-        deployment_package: build.zip
+        deployment_package: backend/build.zip
