@@ -27,7 +27,7 @@ jobs:
     - run: npm test
     
     - name: Generate deployment package (zip entire backend directory, prod environment vars configured in AWS ELB)
-      run: zip -r backend
+      run: zip build.zip -r ./backend
 
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v14
