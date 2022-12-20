@@ -22,12 +22,12 @@ const getAllPractitionersHandler = async () => getAllPractitioners(scanAllPracti
 app.use(cors())
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.status(200).json({ ok: Date.now().toString() })
 })
 
 app.get('/practitioners', async (req, res) => {
   const practitioners = await getAllPractitionersHandler()
-  res.json(practitioners)
+  res.status(200).json(practitioners)
 })
 
 app.listen(port, () => {
