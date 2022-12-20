@@ -8,7 +8,7 @@ on:
       - .github/workflows/deploy-backend-to-elastic-beanstalk.yml
 
 jobs:
-  build:
+  build-and-deploy:
     defaults:
       run:
         working-directory: backend
@@ -27,7 +27,7 @@ jobs:
     - run: npm test
     
     - name: Generate deployment package (zip entire backend directory, prod environment vars configured in AWS ELB)
-      run: zip build.zip -r ./backend
+      run: zip build.zip -r .
 
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v14
