@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
     paths:
       - backend/**
-      - .github/**
+      - .github/workflows/deploy-backend-to-elastic-beanstalk.yml
 
 jobs:
   build:
