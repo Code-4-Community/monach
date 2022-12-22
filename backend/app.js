@@ -8,14 +8,17 @@ import cors from "cors"
 import getAllPractitioners from "./workflows/getAllPractitioners.js"
 // Import effectful dependencies (database connections, email clients, etc.)
 import {scanAllPractitioners} from "./dynamodb.js"
+import { zodiosApp } from "@zodios/express";
+import { userApi } from "../../common/api";
 
-
-const app = express()
+//const app = express()
+const app = zodiosApp(userApi);
 
 const port = process.env.PORT || 3000
 
 //TODO: Use for local testing https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html
 const db = []
+
 // Composition Root
 const getAllPractitionersHandler = async () => getAllPractitioners(scanAllPractitioners)
 

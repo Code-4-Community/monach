@@ -6,6 +6,9 @@ import longTimePartnerImage from './assets/Badge_Heart.png'
 import frequentPartner from './assets/Badge_Partner.png'
 import raw from './raw.json'
 import axios from 'axios'
+import { Zodios } from "@zodios/core";
+import { z } from "zod";
+import userApi from "../../common/api"
 
 faker.seed(123)
 
@@ -177,13 +180,15 @@ function createRandomTherapist (): Therapist {
   }
 }
 
+const apiZodiosClient = new Zodios("https://monarch-backend.c4cneu.com", userApi);
 
 async function fetchAllPractitioners(useFake=false): Promise<Therapist[]> {
   if (useFake) {
     return FAKE_THERAPISTS
   } else {
-    const response = await axios.get('https://monarch-backend.c4cneu.com/practitioners')
-    const data =  response.data
+    const data = await apiZodiosClient.getPractitioners();
+    //const response = await axios.get('https://monarch-backend.c4cneu.com/practitioners')
+   // const data =  response.data
     // Transform on the frontend, but really ought to be done on the backend :/
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment

@@ -153,7 +153,7 @@ export const SearchTherapists: React.FC = () => {
                               fontSize='xs'
                               textTransform='uppercase'
                             >
-                              Webiste
+                              Website
                             </Box>
                             <Text>
                               <Link href={therapist.website} color='blue.600'>
