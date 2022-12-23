@@ -19,6 +19,34 @@ The software system is composed of four major components:
 
 ![Component Diagram](https://www.plantuml.com/plantuml/svg/NP1DIyD048Rl-ojUUceFZNUHqgIfA4Y9JS13yJ19Heacks5tWotYVtVCHv2UmimyypwJtJfFrdTDhLegFkcTiTZL5MkFo9elntQ1RmMSZao5Hvg4MDwyMQCzwtBr2dAu7olr0wMAsdGbmfTqs3gOaeCFX_svjUmSZliqGvWyIaWkkZaZ6eg_bVYYgJ5nX8D9dvyGawUS7FTO7FMIqyuqZT6GJsiqQ-yah-XxGzmmLsew3NU13JQJ1RTuoB8anPBFdgscUgN6aO2bW6AVcKfFZ1grwswzcVzQm4gki9vBv9V_oAIx8hRIakV-1G00)
 
+
+## Development
+
+1. Install Node v16.x
+
+2. Start three terminal instances for each package in root:
+
+``` sh
+# /common
+npm i
+npm run watch # watches and incrementally compiles
+```
+
+``` sh
+# /backend
+npm i
+npm start
+```
+
+``` sh
+# /frontend
+npm i
+npm run dev
+```
+
+### Misc
+
+
 ``` plantuml
 @startuml
 package "Client Browser" {

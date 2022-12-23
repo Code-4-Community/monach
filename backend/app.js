@@ -9,9 +9,9 @@ import getAllPractitioners from "./workflows/getAllPractitioners.js"
 // Import effectful dependencies (database connections, email clients, etc.)
 import {scanAllPractitioners} from "./dynamodb.js"
 import { zodiosApp } from "@zodios/express";
-import { userApi } from "../../common/api";
+import { userApi } from "common";
 
-//const app = express()
+
 const app = zodiosApp(userApi);
 
 const port = process.env.PORT || 3000
