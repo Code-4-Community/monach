@@ -28,7 +28,18 @@ There's many more of course, but for a high level overview these 4.5 components 
 
 #### 2. Clone this repo
 
-#### 3. Install dependencies
+#### 3. Install dependencies, setup env
+
+Go to the project root and run:
+```
+npm install
+```
+
+then, copy `.env.example` into `.env`
+
+Fill in the blanks with the appropriate information. Ask the team directly for details.
+
+:warning: **This is sensitive C4C information so don't leak it!**
 
 #### 4. Serve the application
 
