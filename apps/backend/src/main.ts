@@ -11,8 +11,13 @@ import getAllPractitioners from './workflows/getAllPractitioners';
 import { scanAllPractitioners } from './dynamodb';
 import { zodiosApp } from '@zodios/express';
 import { userApi } from '@monarch/common';
+import serverlessExpress from '@vendia/serverless-express';
 
-const app = zodiosApp(userApi);
+// Need to use base Express in order for compat with serverless-express
+// See: https://github.com/ecyrbe/zodios-express/issues/103
+export const baseApp = express();
+export const app = zodiosApp(userApi, { express: baseApp });
+export const handler = serverlessExpress({ app: baseApp });
 
 //TODO: Use for local testing https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html
 const db = [];
@@ -34,12 +39,12 @@ app.get('/practitioners', async (_req, res) => {
 
 //app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-// app.get('/api', (req, res) => {
-//   res.send({ message: 'Welcome to backend!' });
-// });
-
-const port = process.env.PORT || 3333;
-const server = app.listen(port, () => {
-  console.log(`Listening at http://localhost:${port}`);
-});
-server.on('error', console.error);
+// If running locally just use express
+// Otherwise, we want to export a lambda handler and theres no need to start a server!
+if (!process.env.PRODUCTION) {
+  const port = process.env.PORT || 3333;
+  const server = app.listen(port, () => {
+    console.log(`Listening at http://localhost:${port}`);
+  });
+  server.on('error', console.error);
+}

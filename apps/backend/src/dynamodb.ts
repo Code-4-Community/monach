@@ -9,14 +9,10 @@ if (process.env.AWS_ACCESS_KEY_ID == null) {
 if (process.env.AWS_SECRET_ACCESS_KEY == null) {
   throw new Error('AWS Secret Access Key not configured');
 }
+console.log('key', process.env.AWS_ACCESS_KEY_ID);
+console.log('secret', process.env.AWS_SECRET_ACCESS_KEY!);
 
-const client = new DynamoDBClient({
-  region: process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
-});
+const client = new DynamoDBClient({ region: 'us-east-2' });
 
 // TODO: Write persitence level test using local DB
 // This is kind of a pain, and a "slow" test so we elide it
