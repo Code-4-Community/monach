@@ -46,8 +46,7 @@ Fill in the blanks with the appropriate information. Ask the team directly for d
 The simplest way to run both frontend and backend in a single terminal is:
 
 ```sh
-nx run-many --parallel --target=serve --projects=frontend,backend
-```
+nx run-many --parallel --target=serve --all
 
 But you can run whatever `nx ...` command you want!
 
