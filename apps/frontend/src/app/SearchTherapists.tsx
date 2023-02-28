@@ -16,7 +16,7 @@ import React, {
 } from 'react';
 import { controller, SearchTherapistsQuery } from './actionsController';
 import { useGeolocated } from 'react-geolocated';
-import { Therapist, TherapistDisplayModel } from './therapist';
+import { Therapist, TherapistDisplayModel, Badge as TherapistBadge } from './therapist';
 import {
   Badge,
   Box,
@@ -116,7 +116,8 @@ export const SearchTherapists: React.FC = () => {
           coords?.latitude,
           coords?.longitude
         )
-  );
+  )
+
   if (searchQuery.searchString.length === 0) {
     therapists?.sort((a, b) => comparableDistance(a) - comparableDistance(b));
   }
@@ -127,6 +128,40 @@ export const SearchTherapists: React.FC = () => {
     () => therapists?.slice(0, numTherapistsToRender),
     [numTherapistsToRender, therapists]
   );
+
+  /**
+   * Given a therapist, determines what language they can speak.
+   * 
+   * Assumptions: 
+   * 1) A therapist who does not enter a language into the form (i.e., an empty string) 
+   * is able to speak English.
+   * 2) A therapist can only speak one language.
+   * 3) The only possible languages that a therapist can enter into the form are 
+   * "English", "Spanish", "Polish", "Only English", "Portuguese", "Korean", "English Only", 
+   * "French," or "".
+   * 
+   * @param therapist the therapist whose language needs to be determined.
+   * @returns the language that the therapist can speak.
+   * @throws error if the given therapist has an empty badges array.
+   */
+  const extractTherapistLanguage = (therapist: TherapistDisplayModel): string => {
+    if (therapist.badges.length === 0) {
+      throw new Error("Expected therapist to have at least 1 badge in their badges array.");
+    }
+    let language = '';
+    const possibleLanguages = ["English", "Spanish", "Polish", "Only English", "Portuguese", 
+    "Korean", "English Only", "French"];
+    therapist.badges.forEach((badge: TherapistBadge) => {
+      if (possibleLanguages.includes(badge.name)) {
+        if (badge.name === "Only English" || badge.name === "English Only") {
+          language = "English";
+        } else {
+          language = badge.name;
+        }
+      }
+    })
+    return language.length > 0 ? language : 'English';
+  }
 
   return (
     <div>
@@ -182,7 +217,7 @@ export const SearchTherapists: React.FC = () => {
                     </Heading>
                     <HStack marginTop={3}>
                       <Badge borderRadius="full" px="2" colorScheme="orange">
-                        English
+                      {extractTherapistLanguage(therapist)}
                       </Badge>
                       <Badge borderRadius="full" px="2" colorScheme="teal">
                         New

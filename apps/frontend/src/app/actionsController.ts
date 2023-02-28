@@ -214,7 +214,7 @@ async function fetchAllPractitioners(useFake = false): Promise<Therapist[]> {
       therapyType: d.modality,
       title: d.businessName,
       website: d.website,
-      badges: [],
+      badges: [{ name: d.languages }],
     }));
     return therapists;
   }
@@ -241,7 +241,10 @@ export function makeActionsController(): ActionsController {
           },
           'therapyType',
           'title',
-          'badges.name',
+          {
+            name: 'badges.name',
+            weight: 2,
+          }
         ],
         threshold: 0.6,
         useExtendedSearch: true,
