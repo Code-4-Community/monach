@@ -54,6 +54,7 @@ import {
   StarIcon,
 } from '@chakra-ui/icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import SearchTherapistsFilter from './SearchTherapistsFilter';
 
 const debouncedSearchTherapists = debouncePromise(
   controller.searchTherapists,
@@ -64,6 +65,7 @@ export const SearchTherapists: React.FC = () => {
   const { coords } = useGeolocated();
   const [searchQuery, setSearchQuery] = useState<SearchTherapistsQuery>({
     searchString: '',
+    languages: [],
     maxDistance: 1000,
   });
 
@@ -133,12 +135,8 @@ export const SearchTherapists: React.FC = () => {
    * Given a therapist, determines what language they can speak.
    * 
    * Assumptions: 
-   * 1) A therapist who does not enter a language into the form (i.e., an empty string) 
-   * is able to speak English.
-   * 2) A therapist can only speak one language.
-   * 3) The only possible languages that a therapist can enter into the form are 
-   * "English", "Spanish", "Polish", "Only English", "Portuguese", "Korean", "English Only", 
-   * "French," or "".
+   * 1) A therapist can only speak one language.
+   * 2) The first badge in a therapist's badges property represents their language
    * 
    * @param therapist the therapist whose language needs to be determined.
    * @returns the language that the therapist can speak.
@@ -148,19 +146,7 @@ export const SearchTherapists: React.FC = () => {
     if (therapist.badges.length === 0) {
       throw new Error("Expected therapist to have at least 1 badge in their badges array.");
     }
-    let language = '';
-    const possibleLanguages = ["English", "Spanish", "Polish", "Only English", "Portuguese", 
-    "Korean", "English Only", "French"];
-    therapist.badges.forEach((badge: TherapistBadge) => {
-      if (possibleLanguages.includes(badge.name)) {
-        if (badge.name === "Only English" || badge.name === "English Only") {
-          language = "English";
-        } else {
-          language = badge.name;
-        }
-      }
-    })
-    return language.length > 0 ? language : 'English';
+    return therapist.badges[0].name;
   }
 
   return (
@@ -176,6 +162,7 @@ export const SearchTherapists: React.FC = () => {
             autoFocus
           />
         </InputGroup>
+        <SearchTherapistsFilter searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
         <div style={{ marginBlock: 12 }}>
           <small>

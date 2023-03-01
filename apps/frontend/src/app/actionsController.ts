@@ -65,6 +65,7 @@ export interface ActionsController {
 
 export interface SearchTherapistsQuery {
   searchString: string;
+  languages: (string | number)[];
   maxDistance?: number;
 }
 
@@ -229,10 +230,26 @@ export function makeActionsController(): ActionsController {
     searchTherapists: async (query: SearchTherapistsQuery) => {
       if (allPractitioners.length === 0) {
         allPractitioners = await fetchAllPractitioners();
+        // Hack: if a therapist's languages attribute is an empty string, it is assumed that the therapist 
+        // speaks English.
+        allPractitioners.forEach((practitioner) => {
+          if (!practitioner.badges[0].name) {
+            practitioner.badges[0] = { name: 'English' };
+          }
+        })
       }
 
-      if (query.searchString.length === 0) return allPractitioners;
-      const searchIndex = new Fuse(allPractitioners, {
+      let languageFilteredTherapists = allPractitioners.filter((practitioner: Therapist) => {
+          return practitioner.badges.map((badge: Badge) => { return query.languages.includes(badge.name)}).reduce((prev, cur) => {
+            return prev || cur;
+          });
+      });
+
+      if (query.searchString.length === 0 && query.languages.length > 0) return languageFilteredTherapists;
+      if (query.searchString.length === 0 && query.languages.length === 0) return allPractitioners;
+      if (query.searchString.length > 0 && query.languages.length === 0) languageFilteredTherapists = allPractitioners;
+      
+      const searchIndex = new Fuse(languageFilteredTherapists, {
         keys: [
           'fullName',
           {
@@ -253,7 +270,6 @@ export function makeActionsController(): ActionsController {
         includeScore: true,
       });
       const result = searchIndex.search(query.searchString);
-      console.log(result);
       return result.map((r) => ({ ...r.item, searchScore: r.score ?? 0 }));
     },
     fetchTherapist: (id: string) => {
