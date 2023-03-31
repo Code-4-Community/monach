@@ -16,7 +16,7 @@ import React, {
 } from 'react';
 import { controller, SearchTherapistsQuery } from './actionsController';
 import { useGeolocated } from 'react-geolocated';
-import { Therapist, TherapistDisplayModel, Badge as TherapistBadge } from './therapist';
+import { Therapist, TherapistDisplayModel } from './therapist';
 import {
   Badge,
   Box,
@@ -72,7 +72,7 @@ export const SearchTherapists: React.FC = () => {
   const [searchResult, setSearchResult] = useState<
     TherapistDisplayModel[] | null
   >(null);
-  
+
   useEffect(() => {
     setSearchResult(null);
     debouncedSearchTherapists(searchQuery).then(setSearchResult);
@@ -145,7 +145,8 @@ export const SearchTherapists: React.FC = () => {
             autoFocus
           />
         </InputGroup>
-        <SearchTherapistsFilter searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <SearchTherapistsFilter searchQuery={searchQuery} setSearchQuery={setSearchQuery} 
+                                availableLanguages={["English", "Spanish", "Polish", "Portuguese", "Korean", "French"]}/>
 
         <div style={{ marginBlock: 12 }}>
           <small>

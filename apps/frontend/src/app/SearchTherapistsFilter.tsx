@@ -17,11 +17,10 @@ import { SearchTherapistsQuery } from './actionsController';
 interface SearchTherapistsFilterProps { 
     searchQuery: SearchTherapistsQuery;
     setSearchQuery: React.Dispatch<React.SetStateAction<SearchTherapistsQuery>>;
+    availableLanguages: string[];
 }
 
-const SearchTherapistsFilter: React.FC<SearchTherapistsFilterProps> = ({ searchQuery, setSearchQuery }) => {
-    const availableLanguages = ["English", "Spanish", "Polish", "Portuguese", "Korean", "French"];
-
+const SearchTherapistsFilter: React.FC<SearchTherapistsFilterProps> = ({ searchQuery, setSearchQuery, availableLanguages }) => {
     return (
         <Accordion allowToggle mt={2}>
             <AccordionItem borderTop={0}>
