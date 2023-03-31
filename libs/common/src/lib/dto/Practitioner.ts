@@ -9,7 +9,8 @@ export const Practitioner = z.object({
   businessName: z.string(),
   minAgeServed: z.number(),
   email: z.string().email(),
-  fullName: z.string()
+  fullName: z.string(),
+  languagesList: z.array(z.string()),
 })
 
 export type Practitioner = z.infer<typeof Practitioner>

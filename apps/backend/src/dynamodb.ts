@@ -26,6 +26,7 @@ export async function scanAllPractitioners(): Promise<Practitioner[]> {
     throw new Error('Invalid response from DynamoDB, got undefined/null');
   }
   const unmarshalledItems = dynamoRawResult.Items.map((i) => unmarshall(i));
+  
   const practitioners = unmarshalledItems.map((i) =>
     practitionerSchema.parse(i)
   );

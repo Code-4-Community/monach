@@ -117,6 +117,7 @@ const RYAN: Therapist = {
   therapyType: 'Software',
   title: 'Director of Engineering',
   badges: [],
+  languages: [],
 };
 
 const SOMYA: Therapist = {
@@ -140,6 +141,7 @@ const SOMYA: Therapist = {
   therapyType: 'Software',
   title: 'Director of Operations',
   badges: [LONG_TIME_PARTNER, FREQUENT_PARTNER],
+  languages: [],
 };
 
 const SOFIE: Therapist = {
@@ -163,6 +165,7 @@ const SOFIE: Therapist = {
   therapyType: 'Software',
   title: 'Director of Product',
   badges: [LB_CORP_MONTHLY_DONOR],
+  languages: [],
 };
 
 const FAKE_THERAPISTS: Therapist[] = [...loaded]; // ...Array(1).fill(null).map(createRandomTherapist), RYAN, SOFIE, SOMYA]
@@ -189,6 +192,7 @@ function createRandomTherapist(): Therapist {
     therapyType: faker.name.jobArea(),
     title: faker.name.jobTitle(),
     badges: [],
+    languages: [],
   };
 }
 
@@ -215,7 +219,8 @@ async function fetchAllPractitioners(useFake = false): Promise<Therapist[]> {
       therapyType: d.modality,
       title: d.businessName,
       website: d.website,
-      badges: [{ name: d.languages }],
+      badges: [],
+      languages: d.languagesList,
     }));
     return therapists;
   }
@@ -228,23 +233,14 @@ export function makeActionsController(): ActionsController {
 
   return {
     searchTherapists: async (query: SearchTherapistsQuery) => {
-      if (allPractitioners.length === 0) {
-        allPractitioners = await fetchAllPractitioners();
-        // Hack: if a therapist's languages attribute is an empty string, it is assumed that the therapist 
-        // speaks English.
-        allPractitioners.forEach((practitioner) => {
-          if (!practitioner.badges[0].name) {
-            practitioner.badges[0] = { name: 'English' };
-          }
-        })
-      }
+      allPractitioners = await fetchAllPractitioners();
 
       let languageFilteredTherapists = allPractitioners.filter((practitioner: Therapist) => {
-          return practitioner.badges.map((badge: Badge) => { return query.languages.includes(badge.name)}).reduce((prev, cur) => {
-            return prev || cur;
-          });
+        return practitioner.languages.map((language: string) => { return query.languages.includes(language)}).reduce((prev, cur) => {
+          return prev || cur;
+        })
       });
-
+    
       if (query.searchString.length === 0 && query.languages.length > 0) return languageFilteredTherapists;
       if (query.searchString.length === 0 && query.languages.length === 0) return allPractitioners;
       if (query.searchString.length > 0 && query.languages.length === 0) languageFilteredTherapists = allPractitioners;
@@ -259,7 +255,7 @@ export function makeActionsController(): ActionsController {
           'therapyType',
           'title',
           {
-            name: 'badges.name',
+            name: 'languages',
             weight: 2,
           }
         ],

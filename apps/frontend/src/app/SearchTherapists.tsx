@@ -72,6 +72,7 @@ export const SearchTherapists: React.FC = () => {
   const [searchResult, setSearchResult] = useState<
     TherapistDisplayModel[] | null
   >(null);
+  
   useEffect(() => {
     setSearchResult(null);
     debouncedSearchTherapists(searchQuery).then(setSearchResult);
@@ -131,24 +132,6 @@ export const SearchTherapists: React.FC = () => {
     [numTherapistsToRender, therapists]
   );
 
-  /**
-   * Given a therapist, determines what language they can speak.
-   * 
-   * Assumptions: 
-   * 1) A therapist can only speak one language.
-   * 2) The first badge in a therapist's badges property represents their language
-   * 
-   * @param therapist the therapist whose language needs to be determined.
-   * @returns the language that the therapist can speak.
-   * @throws error if the given therapist has an empty badges array.
-   */
-  const extractTherapistLanguage = (therapist: TherapistDisplayModel): string => {
-    if (therapist.badges.length === 0) {
-      throw new Error("Expected therapist to have at least 1 badge in their badges array.");
-    }
-    return therapist.badges[0].name;
-  }
-
   return (
     <div>
       <div style={{ marginTop: 64 }}>
@@ -187,7 +170,6 @@ export const SearchTherapists: React.FC = () => {
         >
           <VStack spacing={5}>
             {therapistsToRender.map((therapist) => (
-              <>
                 <Box
                   w="full"
                   borderWidth="1px"
@@ -203,9 +185,13 @@ export const SearchTherapists: React.FC = () => {
                       {therapist.therapyType}, {therapist.title}
                     </Heading>
                     <HStack marginTop={3}>
-                      <Badge borderRadius="full" px="2" colorScheme="orange">
-                      {extractTherapistLanguage(therapist)}
-                      </Badge>
+                      {
+                        therapist.languages.map((language: string) => {
+                          return <Badge borderRadius="full" px="2" colorScheme="orange">
+                            { language }
+                          </Badge>
+                        })
+                      }
                       <Badge borderRadius="full" px="2" colorScheme="teal">
                         New
                       </Badge>
@@ -318,7 +304,6 @@ export const SearchTherapists: React.FC = () => {
                     </Box>
                   )}
                 </Box>
-              </>
             ))}
           </VStack>
         </InfiniteScroll>
