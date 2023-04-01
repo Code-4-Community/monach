@@ -65,6 +65,7 @@ export interface ActionsController {
 
 export interface SearchTherapistsQuery {
   searchString: string;
+  languages: (string | number)[];
   maxDistance?: number;
 }
 
@@ -116,6 +117,7 @@ const RYAN: Therapist = {
   therapyType: 'Software',
   title: 'Director of Engineering',
   badges: [],
+  languages: [],
 };
 
 const SOMYA: Therapist = {
@@ -139,6 +141,7 @@ const SOMYA: Therapist = {
   therapyType: 'Software',
   title: 'Director of Operations',
   badges: [LONG_TIME_PARTNER, FREQUENT_PARTNER],
+  languages: [],
 };
 
 const SOFIE: Therapist = {
@@ -162,6 +165,7 @@ const SOFIE: Therapist = {
   therapyType: 'Software',
   title: 'Director of Product',
   badges: [LB_CORP_MONTHLY_DONOR],
+  languages: [],
 };
 
 const FAKE_THERAPISTS: Therapist[] = [...loaded]; // ...Array(1).fill(null).map(createRandomTherapist), RYAN, SOFIE, SOMYA]
@@ -188,6 +192,7 @@ function createRandomTherapist(): Therapist {
     therapyType: faker.name.jobArea(),
     title: faker.name.jobTitle(),
     badges: [],
+    languages: [],
   };
 }
 
@@ -215,6 +220,7 @@ async function fetchAllPractitioners(useFake = false): Promise<Therapist[]> {
       title: d.businessName,
       website: d.website,
       badges: [],
+      languages: d.languagesList,
     }));
     return therapists;
   }
@@ -227,12 +233,19 @@ export function makeActionsController(): ActionsController {
 
   return {
     searchTherapists: async (query: SearchTherapistsQuery) => {
-      if (allPractitioners.length === 0) {
-        allPractitioners = await fetchAllPractitioners();
-      }
+      allPractitioners = await fetchAllPractitioners();
 
-      if (query.searchString.length === 0) return allPractitioners;
-      const searchIndex = new Fuse(allPractitioners, {
+      let languageFilteredTherapists = allPractitioners.filter((practitioner: Therapist) => {
+        return practitioner.languages.map((language: string) => { return query.languages.includes(language)}).reduce((prev, cur) => {
+          return prev || cur;
+        })
+      });
+    
+      if (query.searchString.length === 0 && query.languages.length > 0) return languageFilteredTherapists;
+      if (query.searchString.length === 0 && query.languages.length === 0) return allPractitioners;
+      if (query.searchString.length > 0 && query.languages.length === 0) languageFilteredTherapists = allPractitioners;
+      
+      const searchIndex = new Fuse(languageFilteredTherapists, {
         keys: [
           'fullName',
           {
@@ -241,7 +254,10 @@ export function makeActionsController(): ActionsController {
           },
           'therapyType',
           'title',
-          'badges.name',
+          {
+            name: 'languages',
+            weight: 2,
+          }
         ],
         threshold: 0.6,
         useExtendedSearch: true,
@@ -250,7 +266,6 @@ export function makeActionsController(): ActionsController {
         includeScore: true,
       });
       const result = searchIndex.search(query.searchString);
-      console.log(result);
       return result.map((r) => ({ ...r.item, searchScore: r.score ?? 0 }));
     },
     fetchTherapist: (id: string) => {

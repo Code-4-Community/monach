@@ -23,6 +23,7 @@ export interface Therapist {
   website?: string
 
   badges: Badge[]
+  languages: string[]
 }
 
 export interface Badge {

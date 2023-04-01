@@ -54,6 +54,7 @@ import {
   StarIcon,
 } from '@chakra-ui/icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import SearchTherapistsFilter from './SearchTherapistsFilter';
 
 const debouncedSearchTherapists = debouncePromise(
   controller.searchTherapists,
@@ -64,12 +65,14 @@ export const SearchTherapists: React.FC = () => {
   const { coords } = useGeolocated();
   const [searchQuery, setSearchQuery] = useState<SearchTherapistsQuery>({
     searchString: '',
+    languages: [],
     maxDistance: 1000,
   });
 
   const [searchResult, setSearchResult] = useState<
     TherapistDisplayModel[] | null
   >(null);
+
   useEffect(() => {
     setSearchResult(null);
     debouncedSearchTherapists(searchQuery).then(setSearchResult);
@@ -116,7 +119,8 @@ export const SearchTherapists: React.FC = () => {
           coords?.latitude,
           coords?.longitude
         )
-  );
+  )
+
   if (searchQuery.searchString.length === 0) {
     therapists?.sort((a, b) => comparableDistance(a) - comparableDistance(b));
   }
@@ -141,6 +145,8 @@ export const SearchTherapists: React.FC = () => {
             autoFocus
           />
         </InputGroup>
+        <SearchTherapistsFilter searchQuery={searchQuery} setSearchQuery={setSearchQuery} 
+                                availableLanguages={["English", "Spanish", "Polish", "Portuguese", "Korean", "French"]}/>
 
         <div style={{ marginBlock: 12 }}>
           <small>
@@ -165,7 +171,6 @@ export const SearchTherapists: React.FC = () => {
         >
           <VStack spacing={5}>
             {therapistsToRender.map((therapist) => (
-              <>
                 <Box
                   w="full"
                   borderWidth="1px"
@@ -181,9 +186,13 @@ export const SearchTherapists: React.FC = () => {
                       {therapist.therapyType}, {therapist.title}
                     </Heading>
                     <HStack marginTop={3}>
-                      <Badge borderRadius="full" px="2" colorScheme="orange">
-                        English
-                      </Badge>
+                      {
+                        therapist.languages.map((language: string) => {
+                          return <Badge borderRadius="full" px="2" colorScheme="orange">
+                            { language }
+                          </Badge>
+                        })
+                      }
                       <Badge borderRadius="full" px="2" colorScheme="teal">
                         New
                       </Badge>
@@ -296,7 +305,6 @@ export const SearchTherapists: React.FC = () => {
                     </Box>
                   )}
                 </Box>
-              </>
             ))}
           </VStack>
         </InfiniteScroll>
