@@ -5,7 +5,10 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { SearchTherapists } from './app/SearchTherapists';
 import ManageTherapists from './app/ManageTherapists';
 import { ChakraProvider } from '@chakra-ui/react';
+import { Amplify, Auth } from 'aws-amplify';
+// import awsconfig from './aws-exports';
 
+// Amplify.configure(awsconfig);
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
