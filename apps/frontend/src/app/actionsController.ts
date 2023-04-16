@@ -221,6 +221,10 @@ async function fetchAllPractitioners(useFake = false): Promise<Therapist[]> {
       website: d.website,
       badges: [],
       languages: d.languagesList,
+      geocode: {
+        lat: d.geocode.lat,
+        long: d.geocode.long,
+      }
     }));
     return therapists;
   }

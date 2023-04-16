@@ -10,7 +10,7 @@ export interface Therapist {
   phone: string
   profilePictureUrl: string
 
-  geocode?: {
+  geocode: {
     lat: number
     long: number
     canonicalAddress: string

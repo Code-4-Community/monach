@@ -108,22 +108,24 @@ export const SearchTherapists: React.FC = () => {
   }
 
   console.log('data', data);
-  const therapists = data?.filter(
-    (therapist) =>
-      therapist.geocode == null ||
-      coords == null ||
-      (searchQuery.maxDistance ?? Number.MAX_VALUE) >=
-        dist(
-          therapist.geocode?.lat,
-          therapist.geocode?.long,
-          coords?.latitude,
-          coords?.longitude
-        )
-  )
+  // const therapists = data?.filter(
+  //   (therapist) =>
+  //     therapist.geocode == null ||
+  //     coords == null ||
+  //     (searchQuery.maxDistance ?? Number.MAX_VALUE) >=
+  //       dist(
+  //         therapist.geocode?.lat,
+  //         therapist.geocode?.long,
+  //         coords?.latitude,
+  //         coords?.longitude
+  //       )
+  // )
 
-  if (searchQuery.searchString.length === 0) {
-    therapists?.sort((a, b) => comparableDistance(a) - comparableDistance(b));
-  }
+  const therapists = data;
+
+  // if (searchQuery.searchString.length === 0) {
+  //   therapists?.sort((a, b) => comparableDistance(a) - comparableDistance(b));
+  // }
 
   const [numTherapistsToRender, setNumTherapistsToRender] = useState(10);
 
