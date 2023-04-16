@@ -13,7 +13,6 @@ export interface Therapist {
   geocode: {
     lat: number
     long: number
-    canonicalAddress: string
   }
 
   minimumAgeServed: number; // nat
