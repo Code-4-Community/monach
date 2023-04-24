@@ -11,6 +11,10 @@ export const Practitioner = z.object({
   email: z.string().email(),
   fullName: z.string(),
   languagesList: z.array(z.string()),
+  geocode: z.object({
+    lat: z.number(),
+    long: z.number(),
+  })
 })
 
 export type Practitioner = z.infer<typeof Practitioner>

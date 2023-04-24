@@ -6,6 +6,7 @@ import longTimePartnerImage from '../assets/Badge_Heart.png';
 import frequentPartner from '../assets/Badge_Partner.png';
 import raw from './raw.json';
 import { createApiClient } from '@monarch/common';
+import { dist } from './SearchTherapists';
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -66,7 +67,7 @@ export interface ActionsController {
 export interface SearchTherapistsQuery {
   searchString: string;
   languages: (string | number)[];
-  maxDistance?: number;
+  maxDistance: number;
 }
 
 const LB_CORP_MONTHLY_DONOR: Badge = {
@@ -221,6 +222,10 @@ async function fetchAllPractitioners(useFake = false): Promise<Therapist[]> {
       website: d.website,
       badges: [],
       languages: d.languagesList,
+      geocode: {
+        lat: d.geocode.lat,
+        long: d.geocode.long,
+      }
     }));
     return therapists;
   }

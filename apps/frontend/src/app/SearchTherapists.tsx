@@ -66,7 +66,7 @@ export const SearchTherapists: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<SearchTherapistsQuery>({
     searchString: '',
     languages: [],
-    maxDistance: 1000,
+    maxDistance: 100,
   });
 
   const [searchResult, setSearchResult] = useState<
@@ -108,18 +108,25 @@ export const SearchTherapists: React.FC = () => {
   }
 
   console.log('data', data);
-  const therapists = data?.filter(
-    (therapist) =>
-      therapist.geocode == null ||
-      coords == null ||
-      (searchQuery.maxDistance ?? Number.MAX_VALUE) >=
-        dist(
-          therapist.geocode?.lat,
-          therapist.geocode?.long,
-          coords?.latitude,
-          coords?.longitude
-        )
-  )
+  const therapists = data?.filter((therapist) => {
+    return dist(therapist.geocode.lat, 
+      therapist.geocode.long,
+      coords?.latitude, 
+      coords?.longitude) < searchQuery.maxDistance;
+  })
+
+  // const therapists = data?.filter(
+  //   (therapist) =>
+  //     therapist.geocode == null ||
+  //     coords == null ||
+  //     (searchQuery.maxDistance ?? Number.MAX_VALUE) >=
+  //       dist(
+  //         therapist.geocode?.lat,
+  //         therapist.geocode?.long,
+  //         coords?.latitude,
+  //         coords?.longitude
+  //       )
+  // )
 
   if (searchQuery.searchString.length === 0) {
     therapists?.sort((a, b) => comparableDistance(a) - comparableDistance(b));
@@ -233,7 +240,9 @@ export const SearchTherapists: React.FC = () => {
                           <Text>{therapist.email}</Text>
                         </Box>
                       </WrapItem>
-                      <WrapItem>
+                      {
+                        therapist.website && (
+                          <WrapItem>
                         <Box>
                           <Box
                             color="gray.500"
@@ -251,6 +260,8 @@ export const SearchTherapists: React.FC = () => {
                           </Text>
                         </Box>
                       </WrapItem>
+                        )
+                      }
                       <WrapItem>
                         <Box>
                           <Box
@@ -311,19 +322,17 @@ export const SearchTherapists: React.FC = () => {
       )}
 
       {isLoading && (
-        <>
           <Stack spacing={5} marginTop="48px">
             <Skeleton height="240px" />
             <Skeleton height="240px" />
             <Skeleton height="240px" />
           </Stack>
-        </>
       )}
     </div>
   );
 };
 
-function dist(lat1: number, lon1: number, lat2: number, lon2: number) {
+export function dist(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371e3; // metres
   const φ1 = (lat1 * Math.PI) / 180; // φ, λ in radians
   const φ2 = (lat2 * Math.PI) / 180;
