@@ -1,3 +1,7 @@
+# Archived! Monarch now lives in the `everything` monorepo.
+
+----
+
 # 🦋 Monarch 🦋
 
 ## ❤️ About the People
